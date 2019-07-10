@@ -16,12 +16,32 @@
   * destroy() // prototype method that returns: `${this.name} was removed from the game.`
 */
 
+function GameObject(attributes) {
+  this.createdAt = attributes.createdAt;
+  this.name = attributes.name;
+  this.dimensions = attributes.dimensions;
+};
+GameObject.prototype.destroy = function() {
+  return `${this.name} was removed from the game`;
+};
+
 /*
   === CharacterStats ===
   * healthPoints
   * takeDamage() // prototype method -> returns the string '<object name> took damage.'
   * should inherit destroy() from GameObject's prototype
 */
+
+function CharacterStats(charAttributes) {
+  GameObject.call(this, charAttributes);
+  this.healthPoints = charAttributes.healthPoints;
+};
+
+CharacterStats.prototype = Object.create(GameObject.prototype);
+
+CharacterStats.prototype.takeDamage = function() {
+  return `${this.name} take damage`;
+};
 
 /*
   === Humanoid (Having an appearance or character resembling that of a human.) ===
@@ -32,6 +52,19 @@
   * should inherit destroy() from GameObject through CharacterStats
   * should inherit takeDamage() from CharacterStats
 */
+
+function Humanoid(humAttributes) {
+  CharacterStats.call(this, humAttributes);
+  this.team = humAttributes.team;
+  this.weapons = humAttributes.weapons;
+  this.language = humAttributes.language;
+};
+
+Humanoid.prototype = Object.create(CharacterStats.prototype);
+
+Humanoid.prototype.greet = function() {
+  return `${this.name} offers a greeting in ${this.language}`;
+};
  
 /*
   * Inheritance chain: GameObject -> CharacterStats -> Humanoid
@@ -39,9 +72,33 @@
   * Instances of CharacterStats should have all of the same properties as GameObject.
 */
 
+function Hero(heroAttributes) {
+  Humanoid.call(this, heroAttributes);
+  this.warden = heroAttributes.warden;
+  this.rank = heroAttributes.rank;
+};
+
+Hero.prototype = Object.create(Humanoid.prototype);
+
+Hero.prototype.bloodOath = function () {
+  return `${this.warden}, ${this.name} has consumed the darkspawn blood and has been given the title of ${this.rank}.`;
+}
+
+function Villain(vilAttribtes) {
+  Humanoid.call(this, vilAttribtes);
+  this.oldGods = vilAttribtes.oldGods;
+  this.type = vilAttribtes.type;
+};
+
+Villain.prototype = Object.create(Humanoid.prototype);
+
+Villain.prototype.archDemon = function() {
+  return `The ${this.type} have awaken the ${this.oldGods}... I fear the blight is upon us... may Andraste save us all...`;
+};
+
 // Test you work by un-commenting these 3 objects and the list of console logs below:
 
-/*
+
   const mage = new Humanoid({
     createdAt: new Date(),
     dimensions: {
@@ -56,6 +113,42 @@
       'Staff of Shamalama',
     ],
     language: 'Common Tongue',
+  });
+
+  const warden = new Hero({
+    createdAt: new Date(),
+    dimensions: {
+      length: 2,
+      width: 1,
+      height: 3,
+    },
+    healthPoints: 25,
+    name: 'Blackwall',
+    team: 'Gray Wardens',
+    weapons: [
+      'Darkspawn sword of light',
+    ],
+    language: 'Common Tongue',
+    warden: true,
+    rank: "battle master"
+  });
+
+  const darkspawn = new Villain({
+    createdAt: new Date(),
+    dimensions: {
+      length: 6,
+      width: 4,
+      height: 8,
+    },
+    healthPoints: 55,
+    name: 'Unknown',
+    team: 'Darkspawn',
+    weapons: [
+      'The Corruption',
+    ],
+    language: 'Unknown',
+    oldGods: "Arch Demon",
+    type: "Darkspawn"
   });
 
   const swordsman = new Humanoid({
@@ -102,7 +195,9 @@
   console.log(archer.greet()); // Lilith offers a greeting in Elvish.
   console.log(mage.takeDamage()); // Bruce took damage.
   console.log(swordsman.destroy()); // Sir Mustachio was removed from the game.
-*/
+  console.log(warden.bloodOath());
+  console.log(darkspawn.archDemon());
+
 
   // Stretch task: 
   // * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.  
